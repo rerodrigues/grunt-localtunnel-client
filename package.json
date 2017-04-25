@@ -1,0 +1,33 @@
+{
+  "name": "grunt-localtunnel-client",
+  "version": "0.1.0",
+  "description": "Expose a local server to the world using Localtunnel",
+  "homepage": "https://github.com/rerodrigues/grunt-localtunnel-client#readme",
+  "author": {
+    "name": "Renato Rodrigues",
+    "email": "renato@renatorodrigues.com",
+    "url": "https://github.com/rerodrigues"
+  },
+  "files": [
+    "tasks"
+  ],
+  "keywords": [
+    "gruntplugin",
+    "localtunnel",
+    "local-tunnel",
+    "tunnel",
+    "expose",
+    "local-server"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rerodrigues/grunt-localtunnel-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rerodrigues/grunt-localtunnel-client/issues"
+  },
+  "dependencies": {
+    "localtunnel": "^1.8.2"
+  }
+}
