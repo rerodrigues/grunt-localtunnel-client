@@ -1,6 +1,6 @@
 {
   "name": "grunt-localtunnel-client",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Expose a local server to the world using Localtunnel",
   "homepage": "https://github.com/rerodrigues/grunt-localtunnel-client#readme",
   "author": {
