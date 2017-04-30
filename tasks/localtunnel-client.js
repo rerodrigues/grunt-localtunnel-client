@@ -6,42 +6,62 @@
  * Licensed under the MIT license.
  */
 
-var localtunnel = require('localtunnel');
+const localtunnel = require('localtunnel');
 
 module.exports = (grunt) => {
 
     grunt.registerMultiTask('localtunnel_client', 'Expose a local server to the world using Localtunnel', function() {
         const done = this.async();
 
-        const defaults = {
+        const options = this.options({
             port: 8000,
             local_host: 'localhost',
             subdomain: undefined,
             keepalive: false,
-            onSuccess() {},
-            onError() {}
+            onError() {},
+            onSuccess() {}
+        });
+
+        const callbacks = new Proxy({}, {
+            set(target, key, value) {
+                if(typeof value === 'function') {
+                    target[key] = value;
+                } else {
+                    grunt.fail.warn(`Localtunnel-client: ${key} must be a valid function.`, 3);
+                    target[key] = () => {};
+                }
+            }
+        });
+
+        const tunnelOptions = {
+            subdomain: options.subdomain ? options.subdomain.toLowerCase().replace(/[^a-z0-9]/g,'') : undefined,
+            local_host: options.local_host
         };
 
-        const options = this.options(defaults);
+        const errorHandler = (err) => {
+            callbacks.onError(err);
+            done(grunt.log.error('Localtunnel: %s', err));
+        };
 
-        var tunnel = localtunnel(options.port, options, (err, tunnel) => {
+        callbacks.onError = options.onError;
+        callbacks.onSuccess = options.onSuccess;
+
+        const tunnel = localtunnel(options.port, tunnelOptions, (err, tunnel) => {
             if (err) {
-                options.onError(err);
-                done(grunt.log.error('Localtunnel: %s', err));
+                errorHandler(err);
             }
 
-            grunt.log.ok('Localtunnel: Successfully connected at %s', tunnel.url);
-            options.onSuccess(tunnel);
+            if(tunnel && tunnel.url) {
+                grunt.log.ok(`Localtunnel: Successfully connected. Your public URL is ${tunnel.url}.`);
+                callbacks.onSuccess(tunnel);
+            }
 
             if(!(this.flags.keepalive || options.keepalive)) {
                 done();
             }
         });
 
-        tunnel.on('error', (err) => {
-            options.onError(err);
-            grunt.log.error('Localtunnel: %s', err);
-        });
+        tunnel.on('error', errorHandler);
 
         tunnel.on('close', () => done(grunt.log.ok('Localtunnel disconnected')) );
 
